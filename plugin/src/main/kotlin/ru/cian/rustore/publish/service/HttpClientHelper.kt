@@ -10,7 +10,8 @@ import ru.cian.rustore.publish.utils.Logger
 import java.util.concurrent.TimeUnit
 
 internal class HttpClientHelper constructor(
-    private val logger: Logger
+    private val logger: Logger,
+    private val requestTimeout: Long?,
 ) {
 
     private val gson by lazy { Gson() }
@@ -30,8 +31,9 @@ internal class HttpClientHelper constructor(
     @Suppress("ThrowsCount")
     inline fun <reified T> execute(requestBuilder: Request.Builder, url: String, headers: Map<String, String>?): T {
         try {
+            val connectTimeout = requestTimeout ?: REQUEST_TIMEOUT
             val client = OkHttpClient.Builder()
-                .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
                 .writeTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
                 .build()
